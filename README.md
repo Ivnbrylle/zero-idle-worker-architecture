@@ -67,31 +67,41 @@ gcloud services enable \
     storage.googleapis.com
 ```
 
-### Step 3: Build & Push the Docker Image
+### Step 3: Initialize the Infrastructure Scaffold
+Navigate to the `terraform` directory, initialize the providers, and run a partial apply to build your base warehouses and registry first:
+```bash
+cd terraform
+terraform init
+# Target everything EXCEPT the Cloud Run and Eventarc layers which depend on the image
+terraform apply -target=google_artifact_registry_repository.worker_repo -target=google_storage_bucket.input_bucket -target=google_storage_bucket.output_bucket --auto-approve
+```
+
+### Step 4: Build & Push the Docker Image
+Now that the private registry space officially exists in your cloud console, compile and upload your micro-container:
+
 1. Authenticate Docker with your region's GCP Artifact Registry:
-   ```bash
-   gcloud auth configure-docker us-central1-docker.pkg.dev
-   ```
+```bash
+gcloud auth configure-docker us-central1-docker.pkg.dev
+```
+
 2. Build the multi-stage Docker container locally:
-   ```bash
-   docker build -t us-central1-docker.pkg.dev/zero-idle-worker-architecture/worker-repo/worker-image:v2 ./src
-   ```
+```bash
+docker build -t us-central1-docker.pkg.dev/zero-idle-worker-architecture/worker-repo/worker-image:v2 ../src
+```
+
 3. Push the image to your Artifact Registry:
-   ```bash
-   docker push us-central1-docker.pkg.dev/zero-idle-worker-architecture/worker-repo/worker-image:v2
-   ```
+```bash
+docker push us-central1-docker.pkg.dev/zero-idle-worker-architecture/worker-repo/worker-image:v2
+```
 
 > [!NOTE]
 > Ensure that the project ID in your Docker tag matches the project configured in your [terraform/main.tf](file:///C:/Users/rempi/OneDrive/Desktop/zero-idle-worker-architecture/terraform/main.tf) configuration.
 
-### Step 4: Provision Infrastructure with Terraform
-Navigate to the `terraform` directory, initialize the providers, and apply the configuration:
+### Step 5: Finalize the Complete Architecture Loop
+With the container image now sitting safely in your registry, run a full apply to finalize the Cloud Run deployment and tie the Eventarc trigger connections together:
 ```bash
-cd terraform
-terraform init
-terraform apply
+terraform apply --auto-approve
 ```
-Terraform will automatically set up the Input and Output storage buckets, create the Artifact Registry repo configuration, deploy the Cloud Run service, and configure Eventarc to orchestrate the pipeline.
 
 ---
 
