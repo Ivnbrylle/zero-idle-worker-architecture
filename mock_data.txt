@@ -1,0 +1,1 @@
+Invoice Data: User ID 9942, Amount , Items: Cloud Consulting, Status: Paid
