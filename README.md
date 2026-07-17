@@ -4,7 +4,7 @@ An event-driven, cost-effective serverless pipeline built on Google Cloud Platfo
 
 ---
 
-## 🏗️ Architecture Overview
+## Architecture Overview
 
 The system utilizes an asynchronous, event-driven pattern to decouple file storage from document compilation:
 
@@ -13,7 +13,7 @@ graph TD
     User([User / System]) -->|Uploads Raw File| GCS_In([Input Bucket: zero-idle-input-bucket])
     GCS_In -->|Trigger: object.v1.finalized| Eventarc[Eventarc Trigger]
     Eventarc -->|HTTP POST Payload| CloudRun[Cloud Run: pdf-worker-service]
-    CloudRun -->|1. Processes Payload & Compiles PDF| LocalPDF[/tmp/generated_report.pdf]
+    CloudRun -->|1. Processes Payload & Compiles PDF| LocalPDF["/tmp/generated_report.pdf"]
     CloudRun -->|2. Uploads Result| GCS_Out([Output Bucket: zero-idle-output-bucket])
 ```
 
@@ -26,7 +26,7 @@ graph TD
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 *   [src/main.py](file:///C:/Users/rempi/OneDrive/Desktop/zero-idle-worker-architecture/src/main.py) — The FastAPI worker application that parses Eventarc/PubSub events, compiles PDFs with ReportLab, and uploads them back to GCS.
 *   [src/Dockerfile](file:///C:/Users/rempi/OneDrive/Desktop/zero-idle-worker-architecture/src/Dockerfile) — A clean, production-grade multi-stage Dockerfile that compiles Python packages in a build layer and runs them in a minimal runner layer.
@@ -36,7 +36,7 @@ graph TD
 
 ---
 
-## 🛠️ Prerequisites
+## Prerequisites
 
 To deploy and run this architecture, you need:
 1. A **GCP Project** with billing enabled.
@@ -46,7 +46,7 @@ To deploy and run this architecture, you need:
 
 ---
 
-## 🚀 Deployment Guide
+## Deployment Guide
 
 ### Step 1: GCP Authentication & Configurations
 Ensure your local `gcloud` CLI is logged in and configured to use your target GCP Project ID (e.g., `zero-idle-worker-architecture`):
@@ -95,7 +95,7 @@ Terraform will automatically set up the Input and Output storage buckets, create
 
 ---
 
-## 🧪 Testing the Architecture
+## Testing the Architecture
 
 To verify that the end-to-end event-driven loop works correctly:
 
@@ -114,7 +114,7 @@ To verify that the end-to-end event-driven loop works correctly:
 
 ---
 
-## 💻 Local Development & Mocking
+## Local Development & Mocking
 
 For fast iteration cycles, you can run the FastAPI application locally and simulate Eventarc/PubSub push notifications.
 
